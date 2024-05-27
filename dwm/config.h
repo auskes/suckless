@@ -17,8 +17,8 @@ static const char float_border[] = "#824E48";
 static const char *colors[][4] = {
 
     /*               fg        bg        border       float    */
-    [SchemeNorm] = { norm_fg,   norm_bg,  norm_border, float_border}, // unfocused
-    [SchemeSel]  = { sel_fg,  sel_bg,   sel_border,  float_border},  // focused
+    [SchemeNorm] = { norm_fg,  norm_bg,  norm_border, float_border}, // unfocused
+    [SchemeSel]  = { sel_fg,   sel_bg,   sel_border,  float_border},  // focused
 };
 
 static const char *tags[] = { "dev", "net", "doc", "irc", "gfx", "etc" };
