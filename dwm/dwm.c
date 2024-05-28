@@ -38,7 +38,7 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeSel, SchemeUrg, }; /* color schemes */
+enum { SchemeNorm, SchemeSel, SchemeUrg }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
        NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
@@ -1159,7 +1159,6 @@ movemouse(const Arg *arg)
 			if ((ev.xmotion.time - lasttime) <= (1000 / 60)) // Swap value "60" according to desired refresh rate, (1000 / 120)), (1000 / 144)), etc.
 				continue;
 			lasttime = ev.xmotion.time;
-			
 			nx = ocx + (ev.xmotion.x - x);
 			ny = ocy + (ev.xmotion.y - y);
 			if (abs(selmon->wx - nx) < snap)
@@ -1198,7 +1197,7 @@ movemouse(const Arg *arg)
 					Client *cl1, *cl2, ocl1;
 					
 					if (!selmon->lt[selmon->sellt]->arrange) return;
-
+					
 					cl1 = c;
 					cl2 = cc;
 					ocl1 = *cl1;
