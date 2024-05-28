@@ -1581,7 +1581,7 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
 		case 6: /* Steady bar */
 			XftDrawRect(xw.draw, &drawcol,
 					win.hborderpx + cx * win.cw,
-					win.vborderpx + (cy + 1) * win.ch - \
+					win.vborderpx + cy * win.ch,
 					cursorthickness, win.ch);
 			break;
 		}
