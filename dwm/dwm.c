@@ -1508,21 +1508,6 @@ setlayout(const Arg *arg)
 		drawbar(selmon);
 }
 
-/* arg > 1.0 will set mfact absolutely */
-void
-setmfact(const Arg *arg)
-{
-	float f;
-
-	if (!arg || !selmon->lt[selmon->sellt]->arrange)
-		return;
-	f = arg->f < 1.0 ? arg->f + selmon->mfact : arg->f - 1.0;
-	if (f < 0.05 || f > 0.95)
-		return;
-	selmon->mfact = f;
-	arrange(selmon);
-}
-
 void
 setup(void)
 {
