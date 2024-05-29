@@ -127,7 +127,6 @@ static void applyrules(Client *c);
 static int applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact);
 static void arrange(Monitor *m);
 static void arrangemon(Monitor *m);
-static void attach(Client *c);
 static void attachbottom(Client *c);
 static void attachstack(Client *c);
 static void buttonpress(XEvent *e);
@@ -142,14 +141,13 @@ static Monitor *createmon(void);
 static void destroynotify(XEvent *e);
 static void detach(Client *c);
 static void detachstack(Client *c);
-static Monitor *dirtomon(int dir);
 static void drawbar(Monitor *m);
 static void drawbars(void);
 static void enternotify(XEvent *e);
 static void expose(XEvent *e);
 static void focus(Client *c);
 static void focusin(XEvent *e);
-static void focusmon(const Arg *arg);
+static void focusstack(const Arg *arg);
 static Atom getatomprop(Client *c, Atom prop);
 static int getrootptr(int *x, int *y);
 static long getstate(Window w);
@@ -164,7 +162,6 @@ static void maprequest(XEvent *e);
 static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
 static Client *nexttiled(Client *c);
-static void pop(Client *c);
 static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
@@ -186,14 +183,11 @@ static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
 static void spawn(const Arg *arg);
 static void tag(const Arg *arg);
-static void tagmon(const Arg *arg);
 static void tile(Monitor *m);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglefullscr(const Arg *arg);
 static void togglescratch(const Arg *arg);
-static void toggletag(const Arg *arg);
-static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
 static void unmapnotify(XEvent *e);
@@ -213,7 +207,6 @@ static Monitor *wintomon(Window w);
 static int xerror(Display *dpy, XErrorEvent *ee);
 static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
-static void zoom(const Arg *arg);
 
 /* variables */
 static const char broken[] = "broken";
@@ -387,13 +380,6 @@ arrangemon(Monitor *m)
 	strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof m->ltsymbol);
 	if (m->lt[m->sellt]->arrange)
 		m->lt[m->sellt]->arrange(m);
-}
-
-void
-attach(Client *c)
-{
-	c->next = c->mon->clients;
-	c->mon->clients = c;
 }
 
 void
@@ -673,21 +659,6 @@ detachstack(Client *c)
 	}
 }
 
-Monitor *
-dirtomon(int dir)
-{
-	Monitor *m = NULL;
-
-	if (dir > 0) {
-		if (!(m = selmon->next))
-			m = mons;
-	} else if (selmon == mons)
-		for (m = mons; m->next; m = m->next);
-	else
-		for (m = mons; m->next != selmon; m = m->next);
-	return m;
-}
-
 void
 drawbar(Monitor *m)
 {
@@ -803,20 +774,6 @@ focusin(XEvent *e)
 
 	if (selmon->sel && ev->window != selmon->sel->win)
 		setfocus(selmon->sel);
-}
-
-void
-focusmon(const Arg *arg)
-{
-	Monitor *m;
-
-	if (!mons->next)
-		return;
-	if ((m = dirtomon(arg->i)) == selmon)
-		return;
-	unfocus(selmon->sel, 0);
-	selmon = m;
-	focus(NULL);
 }
 
 void
@@ -1239,15 +1196,6 @@ nexttiled(Client *c)
 {
 	for (; c && (c->isfloating || !ISVISIBLE(c)); c = c->next);
 	return c;
-}
-
-void
-pop(Client *c)
-{
-	detach(c);
-	attach(c);
-	focus(c);
-	arrange(c->mon);
 }
 
 void
@@ -1718,14 +1666,6 @@ tag(const Arg *arg)
 }
 
 void
-tagmon(const Arg *arg)
-{
-	if (!selmon->sel || !mons->next)
-		return;
-	sendmon(selmon->sel, dirtomon(arg->i));
-}
-
-void
 tile(Monitor *m)
 {
 	unsigned int i, n, h, mw, my, ty;
@@ -1807,33 +1747,6 @@ togglefullscr(const Arg *arg)
 {
   if(selmon->sel)
     setfullscreen(selmon->sel, !selmon->sel->isfullscreen);
-}
-
-void
-toggletag(const Arg *arg)
-{
-	unsigned int newtags;
-
-	if (!selmon->sel)
-		return;
-	newtags = selmon->sel->tags ^ (arg->ui & TAGMASK);
-	if (newtags) {
-		selmon->sel->tags = newtags;
-		focus(NULL);
-		arrange(selmon);
-	}
-}
-
-void
-toggleview(const Arg *arg)
-{
-	unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
-
-	if (newtagset) {
-		selmon->tagset[selmon->seltags] = newtagset;
-		focus(NULL);
-		arrange(selmon);
-	}
 }
 
 void
@@ -2208,18 +2121,6 @@ xerrorstart(Display *dpy, XErrorEvent *ee)
 {
 	die("dwm: another window manager is already running");
 	return -1;
-}
-
-void
-zoom(const Arg *arg)
-{
-	Client *c = selmon->sel;
-
-	if (!selmon->lt[selmon->sellt]->arrange || !c || c->isfloating)
-		return;
-	if (c == nexttiled(selmon->clients) && !(c = nexttiled(c->next)))
-		return;
-	pop(c);
 }
 
 int
