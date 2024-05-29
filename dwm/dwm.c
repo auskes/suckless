@@ -165,6 +165,7 @@ static Client *nexttiled(Client *c);
 static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
+static void resetlayout(const Arg *arg);
 static void resize(Client *c, int x, int y, int w, int h, int interact);
 static void resizeclient(Client *c, int x, int y, int w, int h);
 static void resizemouse(const Arg *arg);
@@ -178,6 +179,7 @@ static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setgaps(const Arg *arg);
 static void setlayout(const Arg *arg);
+static void setmfact(const Arg *arg);
 static void setup(void);
 static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
@@ -1253,6 +1255,16 @@ recttomon(int x, int y, int w, int h)
 }
 
 void
+resetlayout(const Arg *arg)
+{
+	Arg default_layout = {.v = &layouts[0]};
+	Arg default_mfact = {.f = mfact + 1};
+
+	setlayout(&default_layout);
+	setmfact(&default_mfact);
+}
+
+void
 resize(Client *c, int x, int y, int w, int h, int interact)
 {
 	if (applysizehints(c, &x, &y, &w, &h, interact))
@@ -1269,6 +1281,10 @@ resizeclient(Client *c, int x, int y, int w, int h)
 	c->oldw = c->w; c->w = wc.width = w;
 	c->oldh = c->h; c->h = wc.height = h;
 	wc.border_width = c->bw;
+	
+	if ((nexttiled(c->mon->clients) == c) && !(nexttiled(c->next)))
+		resetlayout(NULL);
+
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
 	configure(c);
 	XSync(dpy, False);
@@ -1506,6 +1522,21 @@ setlayout(const Arg *arg)
 		arrange(selmon);
 	else
 		drawbar(selmon);
+}
+
+/* arg > 1.0 will set mfact absolutely */
+void
+setmfact(const Arg *arg)
+{
+        float f;
+
+        if (!arg || !selmon->lt[selmon->sellt]->arrange)
+                return;
+        f = arg->f < 1.0 ? arg->f + selmon->mfact : arg->f - 1.0;
+        if (f < 0.05 || f > 0.95)
+                return;
+        selmon->mfact = f;
+        arrange(selmon);
 }
 
 void
