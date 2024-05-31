@@ -1835,12 +1835,6 @@ unmanage(Client *c, int destroyed)
 {
 	Monitor *m = c->mon;
 	XWindowChanges wc;
-
-        if (c->switchtotag) {
-        	Arg a = { .ui = c->switchtotag };
-        	view(&a);
-        }
-
 	detach(c);
 	detachstack(c);
 	if (!destroyed) {
