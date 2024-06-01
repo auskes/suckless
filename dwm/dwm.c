@@ -34,7 +34,6 @@
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
 #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
-#define ColFloat                3
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
@@ -754,10 +753,7 @@ focus(Client *c)
 		detachstack(c);
 		attach(c);
 		grabbuttons(c, 1);
-		if(c->isfloating)
-			XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColFloat].pixel);
-		else
-			XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColBorder].pixel);
+		XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColBorder].pixel);
 		setfocus(c);
 	} else {
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
@@ -1013,10 +1009,7 @@ manage(Window w, XWindowAttributes *wa)
 
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
-	if(c->isfloating)
-		XSetWindowBorder(dpy, w, scheme[SchemeNorm][ColFloat].pixel);
-	else
-		XSetWindowBorder(dpy, w, scheme[SchemeNorm][ColBorder].pixel);
+	XSetWindowBorder(dpy, w, scheme[SchemeNorm][ColBorder].pixel);
 	configure(c); /* propagates border_width, if size doesn't change */
 	updatewindowtype(c);
 	updatesizehints(c);
@@ -1029,8 +1022,6 @@ manage(Window w, XWindowAttributes *wa)
 		c->isfloating = c->oldstate = trans != None || c->isfixed;
 	if (c->isfloating)
 		XRaiseWindow(dpy, c->win);
-	if(c->isfloating)
-		XSetWindowBorder(dpy, w, scheme[SchemeNorm][ColFloat].pixel);
 	attach(c);
 	attachstack(c);
 	XChangeProperty(dpy, root, netatom[NetClientList], XA_WINDOW, 32, PropModeAppend,
@@ -1127,60 +1118,11 @@ movemouse(const Arg *arg)
 				ny = selmon->wy;
 			else if (abs((selmon->wy + selmon->wh) - (ny + HEIGHT(c))) < snap)
 				ny = selmon->wy + selmon->wh - HEIGHT(c);
+			if (!c->isfloating && selmon->lt[selmon->sellt]->arrange
+			&& (abs(nx - c->x) > snap || abs(ny - c->y) > snap))
+				togglefloating(NULL);
 			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
 				resize(c, nx, ny, c->w, c->h, 1);	
-			else if (selmon->lt[selmon->sellt]->arrange || !c->isfloating) {
-				if ((m = recttomon(ev.xmotion.x_root, ev.xmotion.y_root, 1, 1)) != selmon) {
-					sendmon(c, m);
-					selmon = m;
-					focus(NULL);
-				}
-
-				Client *cc = c->mon->clients;
-				while (1) {
-					if (cc == 0) break;
-					if(
-					 cc != c && !cc->isfloating && ISVISIBLE(cc) &&
-					 ev.xmotion.x_root > cc->x &&
-					 ev.xmotion.x_root < cc->x + cc->w &&
-					 ev.xmotion.y_root > cc->y &&
-					 ev.xmotion.y_root < cc->y + cc->h ) {
-						break;
-					}
-
-					cc = cc->next;
-				}
-
-				if (cc) {
-					Client *cl1, *cl2, ocl1;
-					
-					if (!selmon->lt[selmon->sellt]->arrange) return;
-					
-					cl1 = c;
-					cl2 = cc;
-					ocl1 = *cl1;
-					strcpy(cl1->name, cl2->name);
-					cl1->win = cl2->win;
-					cl1->x = cl2->x;
-					cl1->y = cl2->y;
-					cl1->w = cl2->w;
-					cl1->h = cl2->h;
-					
-					cl2->win = ocl1.win;
-					strcpy(cl2->name, ocl1.name);
-					cl2->x = ocl1.x;
-					cl2->y = ocl1.y;
-					cl2->w = ocl1.w;
-					cl2->h = ocl1.h;
-					
-					selmon->sel = cl2;
-
-					c = cc;
-					focus(c);
-					
-					arrange(cl1->mon);
-				}
-			}
 			break;
 		}
 	} while (ev.type != ButtonRelease);
@@ -1638,7 +1580,7 @@ setup(void)
 	/* init appearance */
 	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
 	for (i = 0; i < LENGTH(colors); i++)
-		scheme[i] = drw_scm_create(drw, colors[i], 4);
+		scheme[i] = drw_scm_create(drw, colors[i], 3);
 	/* init bars */
 	updatebars();
 	updatestatus();
@@ -1776,10 +1718,6 @@ togglefloating(const Arg *arg)
 		return;
 	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
 	if (selmon->sel->isfloating)
-		XSetWindowBorder(dpy, selmon->sel->win, scheme[SchemeSel][ColFloat].pixel);
-	else
-		XSetWindowBorder(dpy, selmon->sel->win, scheme[SchemeSel][ColBorder].pixel);
-	if(selmon->sel->isfloating)
 		resize(selmon->sel, selmon->sel->x, selmon->sel->y,
 			selmon->sel->w, selmon->sel->h, 0);
 	arrange(selmon);
@@ -1820,10 +1758,7 @@ unfocus(Client *c, int setfocus)
 	if (!c)
 		return;
 	grabbuttons(c, 0);
-     if (c->isfloating)
-        XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColFloat].pixel);
-    else
-	    XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
+	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
 	if (setfocus) {
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
 		XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
