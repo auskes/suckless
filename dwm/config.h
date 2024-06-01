@@ -14,14 +14,13 @@ static const char sel_fg[] = "#EAE0C7";
 static const char sel_bg[] = "#282828";
 static const char urg_fg[] = "#824E48";
 static const char urg_bg[] = "#282828";
-static const char float_border[] = "#824E48";
 
 static const char *colors[][4] = {
 
-    /*               fg        bg        border       float    */
-    [SchemeNorm] = { norm_fg,  norm_bg,  norm_border, float_border }, // unfocused
-    [SchemeSel]  = { sel_fg,   sel_bg,   sel_border,  float_border },  // focused
-    [SchemeUrg]  = { urg_fg,   urg_bg, }, // urgent colors
+    /*               fg        bg        border     */
+    [SchemeNorm] = { norm_fg,  norm_bg,  norm_border }, // unfocused
+    [SchemeSel]  = { sel_fg,   sel_bg,   sel_border },  // focused
+    [SchemeUrg]  = { urg_fg,   urg_bg }, // urgent colors
 };
 
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
