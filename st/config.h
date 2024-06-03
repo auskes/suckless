@@ -1,26 +1,17 @@
 static char *font = "Roboto Mono:pixelsize=20:antialias=true:autohint=true";
 static int borderpx = 22;
-
 static char *shell = "/bin/sh";
 char *utmp = NULL;
-
 char *scroll = NULL;
 char *stty_args = "stty raw pass8 nl -echo -iexten -cstopb 38400";
-
 char *vtiden = "\033[?6c";
-
 static float cwscale = 1.0;
 static float chscale = 1.0;
-
 wchar_t *worddelimiters = L" ";
-
 static unsigned int doubleclicktimeout = 300;
 static unsigned int tripleclicktimeout = 600;
-
 int allowaltscreen = 1;
-
 int allowwindowops = 0;
-
 static double minlatency = 2;
 static double maxlatency = 33;
 static unsigned int blinktimeout = 800;
@@ -55,18 +46,13 @@ unsigned int defaultfg = 15;
 unsigned int defaultbg = 0;
 unsigned int defaultcs = 15;
 static unsigned int defaultrcs= 257;
-
 static unsigned int cursorshape = 4;
-
 static unsigned int cols = 80;
 static unsigned int rows = 30;
-
 static unsigned int mouseshape = XC_xterm;
 static unsigned int mousefg = 7;
 static unsigned int mousebg = 0;
-
 static unsigned int defaultattr = 11;
-
 static uint forcemousemod = ShiftMask;
 
 static MouseShortcut mshortcuts[] = {
@@ -95,10 +81,11 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
+	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
+	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
 };
 
 static KeySym mappedkeys[] = { -1 };
-
 static uint ignoremod = Mod2Mask|XK_SWITCH_MOD;
 
 static Key key[] = {
