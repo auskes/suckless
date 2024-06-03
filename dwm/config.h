@@ -1,5 +1,5 @@
-static const unsigned int borderpx = 4;
-static const unsigned int gappx = 20;
+static const unsigned int borderpx = 3;
+static const unsigned int gappx = 15;
 static const unsigned int snap = 0;
 static const int showbar = 1;
 static const int topbar = 1;
@@ -31,7 +31,6 @@ static const Rule rules[] = {
 	{ "firefox",         NULL,       NULL,       1 << 1,     1,	         0,             -1, },
         { "firefox",         NULL, 
           "Picture-in-Picture",                      1 << 1,     1,              1,             -1, },
-	{ "st",              NULL,       NULL,       1 << 0,	 1,	         0,             -1, },
 };
 
 static const float mfact     = 0.50; 
@@ -63,8 +62,8 @@ static const Key keys[] = {
 	
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY,                       XK_s,      togglescratch,  {.v = scratchpadcmd } },
-	{ MODKEY,                       XK_m,	   spawn,	   {.v = flamcmd } },
+	{ MODKEY|ShiftMask,           	XK_Return, togglescratch,  {.v = scratchpadcmd } },
+	{ MODKEY,                       XK_o,	   spawn,	   {.v = flamcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
@@ -80,7 +79,7 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY,                       XK_v,      togglefloating, {0} },
 	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
-	{ MODKEY,                       XK_0,      tag,            {.ui = ~0 } },
+	{ MODKEY,                       XK_s,      tag,            {.ui = ~0 } },
 	{ MODKEY,                       XK_minus,  setgaps,        {.i = -5 } },
 	{ MODKEY,                       XK_equal,  setgaps,        {.i = +5 } },
 	{ MODKEY|ShiftMask,             XK_equal,  setgaps,        {.i = 0  } },
