@@ -760,7 +760,7 @@ focus(Client *c)
 		if (c->isurgent)
 			seturgent(c, 0);
 		detachstack(c);
-		attach(c);
+		attachstack(c);
 		grabbuttons(c, 1);
 		XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColBorder].pixel);
 		setfocus(c);
