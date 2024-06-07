@@ -3,7 +3,7 @@ static const unsigned int gappx = 15;
 static const unsigned int snap = 0;
 static const int showbar = 1;
 static const int topbar = 1;
-static const int user_bh = 30;
+static const int user_bh = 28;
 static const char *fonts[] = { "Roboto Mono:size=11:style=Bold" };
 static const char dmenufont[] = "Roboto Mono:size=11:style=Bold";
 static const char norm_fg[] = "#827C77";
@@ -14,13 +14,16 @@ static const char sel_fg[] = "#EAE0C7";
 static const char sel_bg[] = "#282828";
 static const char urg_fg[] = "#824E48";
 static const char urg_bg[] = "#282828";
+static const char urg_border[] = "#824E48";
+static const char norm_float[] = "#824E48";
+static const char sel_float[] = "#824E48";
 
 static const char *colors[][4] = {
 
-    /*               fg        bg        border     */
-    [SchemeNorm] = { norm_fg,  norm_bg,  norm_border }, // unfocused
-    [SchemeSel]  = { sel_fg,   sel_bg,   sel_border },  // focused
-    [SchemeUrg]  = { urg_fg,   urg_bg }, // urgent colors
+        /*               fg        bg        border       float     */
+        [SchemeNorm] = { norm_fg,  norm_bg,  norm_border, norm_float }, // unfocused
+        [SchemeSel]  = { sel_fg,   sel_bg,   sel_border,  sel_float  }, // focused
+        [SchemeUrg]  = { urg_fg,   urg_bg,   urg_border }, // urgent colors
 };
 
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
@@ -33,8 +36,8 @@ static const Rule rules[] = {
           "Picture-in-Picture",                      1 << 1,     1,              1,             -1, },
 };
 
-static const float mfact     = 0.50; 
-static const int nmaster     = 1;    
+static const float mfact = 0.50; 
+static const int nmaster = 1;    
 static const int resizehints = 0;    
 static const int lockfullscreen = 1; 
 
@@ -59,40 +62,42 @@ static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "80x30"
 static const char *flamcmd[]  = { "flameshot", "gui", NULL };
 
 static const Key keys[] = {
-	
-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY|ShiftMask,           	XK_Return, togglescratch,  {.v = scratchpadcmd } },
-	{ MODKEY,                       XK_o,	   spawn,	   {.v = flamcmd } },
-	{ MODKEY,                       XK_b,      togglebar,      {0} },
-	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
-	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
-	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
+
+        { MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
+        { MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
+        { MODKEY|ShiftMask,             XK_Return, togglescratch,  {.v = scratchpadcmd } },
+        { MODKEY,                       XK_m,      spawn,          {.v = flamcmd } },
+        { MODKEY|ShiftMask,             XK_b,      togglebar,      {0} },
+        { MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
+        { MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
+        { MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
         { MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-	{ MODKEY|ShiftMask,             XK_j,      movestack,      {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_k,      movestack,      {.i = -1 } },
-	{ MODKEY,                       XK_r,      resetlayout,    {0} },
-	{ MODKEY,                       XK_Tab,    view,           {0} },
-	{ MODKEY,                       XK_q,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_space,  setlayout,      {0} },
-	{ MODKEY,                       XK_v,      togglefloating, {0} },
-	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
-	{ MODKEY,                       XK_s,      tag,            {.ui = ~0 } },
-	{ MODKEY,                       XK_minus,  setgaps,        {.i = -5 } },
-	{ MODKEY,                       XK_equal,  setgaps,        {.i = +5 } },
-	{ MODKEY|ShiftMask,             XK_equal,  setgaps,        {.i = 0  } },
-	TAGKEYS(                        XK_1,                      0)
-	TAGKEYS(                        XK_2,                      1)
-	TAGKEYS(                        XK_3,                      2)
-	TAGKEYS(                        XK_4,                      3)
-	TAGKEYS(                        XK_5,                      4)
-	TAGKEYS(                        XK_6,                      5)
-	TAGKEYS(                        XK_7,                      6)
-	TAGKEYS(                        XK_8,                      7)
-	TAGKEYS(                        XK_9,                      8)
-	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+        { MODKEY|ShiftMask,             XK_j,      movestack,      {.i = +1 } },
+        { MODKEY|ShiftMask,             XK_k,      movestack,      {.i = -1 } },
+        { MODKEY|ShiftMask,             XK_r,      resetlayout,    {0} },
+        { MODKEY,                       XK_Tab,    view,           {0} },
+        { MODKEY,                       XK_i,      shiftview,      {.i = -1 } },
+        { MODKEY,                       XK_o,      shiftview,      {.i = +1 } },
+        { MODKEY,                       XK_q,      killclient,     {0} },
+        { MODKEY,                       XK_u,      focusurgent,    {0} },
+        { MODKEY|ShiftMask,             XK_t,      setlayout,      {.v = &layouts[0]} },
+        { MODKEY|ShiftMask,             XK_f,      setlayout,      {.v = &layouts[1]} },
+        { MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
+        { MODKEY,                       XK_f,      togglefullscr,  {0} },
+        { MODKEY,                       XK_s,      togglesticky,   {0} },
+        { MODKEY,                       XK_minus,  setgaps,        {.i = -5 } },
+        { MODKEY,                       XK_equal,  setgaps,        {.i = +5 } },
+        { MODKEY|ShiftMask,             XK_equal,  setgaps,        {.i = 0  } },
+        TAGKEYS(                        XK_1,                      0)
+        TAGKEYS(                        XK_2,                      1)
+        TAGKEYS(                        XK_3,                      2)
+        TAGKEYS(                        XK_4,                      3)
+        TAGKEYS(                        XK_5,                      4)
+        TAGKEYS(                        XK_6,                      5)
+        TAGKEYS(                        XK_7,                      6)
+        TAGKEYS(                        XK_8,                      7)
+        TAGKEYS(                        XK_9,                      8)
+        { MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 };
 
 static const Button buttons[] = {
