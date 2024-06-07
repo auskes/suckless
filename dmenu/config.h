@@ -11,7 +11,7 @@ static const char *colors[SchemeLast][2] = {
 };
 static unsigned int lines = 0;
 
-static unsigned int lineheight = 30;
-static unsigned int min_lineheight = 30;
+static unsigned int lineheight = 28;
+static unsigned int min_lineheight = 28;
 
 static const char worddelimiters[] = " ";
