@@ -820,7 +820,7 @@ focusstack(const Arg *arg)
 }
 
 void
-focusurgent(const Arg *arg) 
+focusurgent(const Arg *arg)
 {
 	Monitor *m;
 	Client *c;
@@ -835,7 +835,6 @@ focusurgent(const Arg *arg)
 				const Arg a = {.ui = 1 << i};
 				view(&a);
 				focus(c);
-				warp(c);
 			}
 		}
 	}
